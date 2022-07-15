@@ -16,7 +16,7 @@
 @Service
 public class StudentService {
     private StudentDao studentDao;
-    
+
     @Autowired
     public StudentService(StudentDao studentDao) {
         this.studentDao = studentDao;
@@ -71,7 +71,7 @@ String value = optional.orElse("one");
 @Service
 public class StudentService {
     private StudentDao studentDao;
-    
+
     @Autowired
     public StudentService(StudentDao studentDao) {
         this.studentDao = studentDao;
