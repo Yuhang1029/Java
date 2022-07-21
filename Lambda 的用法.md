@@ -59,8 +59,8 @@ Lambda 表达式针对的就是函数式接口，相当于给这个接口提供�
 Lambda 用符号 `->` 表示，左边是参数，通过 () 包裹，和定义的接口保持一致，但是参数类型可以不写；右边就是具体的逻辑实现，通过 {} 包裹，如果逻辑只有一行则也可以省略。根据这个可以改写一下上面的 `printThing()` 的调用：
 
 ```java
-@FunctionalInterfacepublic 
-interface Printable {
+@FunctionalInterface
+public interface Printable {
     void print(String s);
 }
 
