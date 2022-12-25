@@ -126,6 +126,26 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
 
 &emsp;
 
+## ServletContext
+
+`ServletContext` 直译的话叫做“ Servlet 上下文”，听着挺别扭。它其实就是个大容器，是个map。服务器会为每个应用创建一个 `ServletContext` 对象：
+
+- `ServletContext` 对象的创建是在服务器启动时完成的
+- `ServletContext` 对象的销毁是在服务器关闭时完成的
+
+`ServletContext` 对象的作用是在整个Web应用的动态资源（Servlet/JSP）之间共享数据。例如在 A Servlet 中向 `ServletContext` 对象保存一个值，然后在 B Servlet 中就可以获取这个值。
+
+这种用来装载共享数据的对象，在 Java Web 中共有4个，而且更习惯被成为“域对象”：
+
+- ServletContext 域（Servlet 间共享数据）
+- Session 域（一次会话间共享数据，也可以理解为多次请求间共享数据）
+- Request 域（同一次请求共享数据）
+- Page 域（JSP 页面内共享数据）
+
+它们都可以看做是 map，都有 `getAttribute()` 和 `setAttribute()` 方法。
+
+&emsp;
+
 ## 请求转发与重定向
 
 发一个请求给 `Servlet`，接力棒就传递到了 `Servlet` 手中。而绝大部分情况下，`Servlet` 不能独自完成一切，需要把接力棒继续传递下去，此时我们就需要请求的转发或重定向。

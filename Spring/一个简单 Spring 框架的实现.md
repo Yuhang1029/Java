@@ -2,8 +2,6 @@
 
 Spring 技术的两大核心就是控制反转和依赖注入。在这个例子中我们通过一个简单的服务，实现手写一个读取配置文件，容器管理所有 Bean 的简单 Spring 框架。
 
-
-
 ## 项目背景
 
 设想一个水果购物场景，我们遵循服务开发规范，设立控制层 (Controller) ，服务层 (Service) 和 数据访问层 (DAO)，针对具体的业务，由控制层调用服务层调用数据访问层实现相应的逻辑。这里为了简化，具体业务被抽象成了打印一句话，具体代码如下：
@@ -12,7 +10,7 @@ Spring 技术的两大核心就是控制反转和依赖注入。在这个例子�
 
 ```java
 public class FruitController {
-    private FruitService fruitService = null;
+    private FruitService fruitService = new FruitServiceImpl();
 
     public void say() {
         System.out.println("This is fruit controller");
@@ -30,7 +28,7 @@ public interface FruitService {
 
 
 public class FruitServiceImpl implements FruitService{
-    private FruitDao fruitDao = null;
+    private FruitDao fruitDao = new fruitDaoImpl();
 
     @Override
     public void sayService() {
@@ -57,6 +55,10 @@ public class FruitDaoImpl implements FruitDao{
 ```
 
 通过观察上述代码我们可以看出，控制层，服务层和数据控制层之间都存在耦合，需要出现例如 `FruitService fruitService = new FruitServiceImpl()` 这样子的代码，当业务场景变得更复杂，三层所需要的实现类增多之后，会造成整个服务非常复杂，需要有很繁琐的类的构造逻辑从而确保相互之间依赖关系正常。
+
+举个例子，如果此时数据库连接部分我们希望采用新的数据库，即要重新写一个 `FruitDaoImpl2`，为了确保他可以投入使用，我们需要把之前出现过 `new FruitDaoImpl()` 的地方全部改成 `new FruitDaoImpl2()`。当程序很复杂的时候，这个改动点就会很多，从而造成所有之前运行正常的部分也需要单元测试，这样一来就违背了开闭原则 OCP。开闭原则是这样说的：在软件开发过程中应当对扩展开放，对修改关闭。也就是说，如果在进行功能扩展的时候，添加额外的类是没问题的，但因为功能扩展而修改之前运行正常的程序，这是忌讳的，不被允许的。因为一旦修改之前运行正常的程序，就会导致项目整体要进行全方位的重新测试。
+
+同样，这种结构也违背了依赖倒置原则 (Dependence Inversion Principle)。可以很明显的看出，**上层**是依赖**下层**的。`FruitController` 依赖 `FruitServiceImpl`，而 `FruitServiceImpl` 依赖`FruitDaoImpl`，这样就会导致**下面只要改动**，**上面必然会受牵连（跟着也会改）**，所谓牵一发而动全身。
 
 &emsp;
 
@@ -165,3 +167,33 @@ public class ClassPathXMLApplicationContext implements BeanFactory{
 随后我们查找所有的 <bean> 标签节点，因为每一个节点对应一个运行时类，当获取每一个节点时，我们提取出他的 id 名称和完整类名，通过反射构建出运行时类并且存放在 `beanMap` 中。
 
 在完成上面的步骤后，我们已经实现了提取所有的 Java Bean，但是对于他们之间的依赖关系没有处理，所以我们需要再次利用 for 循环遍历所有的 <bean> 节点。这一次，我们需要对所有 <bean> 节点的子节点进行检查，看看哪些其中包含了 <property> 节点。当找到后，我们利用同样的方式提取出 `name` 和 `ref` 两个字段，从 `beanMap` 中找出对应依赖，同样在利用反射实现对类的属性的赋值。整个过程完成之后，所有的运行时类就构造完毕了。
+
+针对上面三个出现的运行时类，我们也需要将所有的属性改成接口，而不能使用具体的接口实现类。
+
+```java
+public class FruitController {
+    private FruitService fruitService = null;
+
+    public void say() {
+        System.out.println("This is fruit controller");
+        fruitService.sayService();
+    }
+}
+```
+
+```java
+public interface FruitService {
+    void sayService();
+}
+
+
+public class FruitServiceImpl implements FruitService{
+    private FruitDao fruitDao = null;
+
+    @Override
+    public void sayService() {
+        System.out.println("This is fruit service");
+        fruitDao.sayDAO();
+    }
+}
+```
