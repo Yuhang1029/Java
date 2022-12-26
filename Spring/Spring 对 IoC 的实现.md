@@ -74,7 +74,6 @@ public class UserService {
   <!--第二个参数下标是1-->
   <constructor-arg index="1" ref="userDaoBean"/>
 </bean>
-
 ```
 
 通过变量名：
@@ -88,8 +87,6 @@ public class UserService {
   <constructor-arg name="orderDao" ref="orderDaoBean"/>
   <constructor-arg name="userDao" ref="userDaoBean"/>
 </bean>
-
-
 ```
 
 &emsp;
@@ -280,7 +277,7 @@ password=root123
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:property-placeholder location="jdbc.properties"/>
-    
+
     <bean id="dataSource" class="com.powernode.spring6.beans.MyDataSource">
         <property name="driver" value="${driver}"/>
         <property name="url" value="${url}"/>
