@@ -208,7 +208,7 @@ public class UserService {
 </bean>
 ```
 
-&emsp;
+&emsp;@Autowired注解可以用来注入**非简单类型**
 
 ## 基于XML 的自动装配
 
@@ -286,3 +286,328 @@ password=root123
     </bean>
 </beans>
 ```
+
+&emsp;
+
+## 注解式开发
+
+注解的存在主要是为了简化 XML 的配置。**Spring6 倡导全注解开发**。
+
+### 注解扫描
+
+首先我们来看一个简单的程序，已知包名 `org.example.bean` ，但是不知道他下面有多少个类，其中有些类上有 `@Component` 注解。现在希望通过对包进行扫描，把所有类上有 `@Component` 注解的类实例化，然后放到 `Map` 集合中。
+
+```java
+public class ScanComponent {
+    public static void main(String[] args) throws Exception {
+        // 存放 Bean 的 Map 集合。key 存储 beanId, value 存储 Bean。
+        Map<String,Object> beanMap = new HashMap<>();
+
+        String packageName = "com.example.bean";
+        String path = packageName.replaceAll("\\.", "/");
+        // 通过包名获取绝对路径
+        URL url = ClassLoader.getSystemClassLoader().getResource(path);
+        File file = new File(url.getPath());
+        File[] files = file.listFiles();
+        Arrays.stream(files).forEach(f -> {
+            String className = packageName + "." + f.getName().split("\\.")[0];
+            try {
+                Class<?> clazz = Class.forName(className);
+                if (clazz.isAnnotationPresent(Component.class)) {
+                    Component component = clazz.getAnnotation(Component.class);
+                    String beanId = component.value();
+                    Object bean = clazz.newInstance();
+                    beanMap.put(beanId, bean);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        System.out.println(beanMap);
+    }
+}
+```
+
+&emsp;
+
+### Spring 中注解的使用
+
+首先需要在配置文件中添加 context 命名空间，并指定要扫描的包：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:component-scan base-package="com.example.bean"/>
+</beans>
+```
+
+在对应的类上加上注解，负责声明 Bean 的注解，常见的包括四个：
+
+- @Component
+- @Controller
+- @Service
+- @Repository
+
+```java
+@Component("userBean")
+public class User {
+}
+```
+
+通过源码可以看到，`@Controller`、`@Service`、`@Repository` 这三个注解都是`@Component` 注解的别名，也就是说，这四个注解的功能都一样。用哪个都可以。只是为了增强程序的可读性，建议：在 `Controller` 类上使用 `@Controller`，在 `Service` 类上使用 `@Service`，在 `Dao` 类上使用 `@Repository`。它们都是只有一个 `value` 属性，`value`属性用来指定 bean 的 id，也就是 bean 的名字。如果把 `value` 属性彻底去掉，spring 会给 Bean 自动取名，并且默认名字的规律是 Bean 类名首字母小写即可。
+
+如果是多个包需要被扫描，有两种解决方案：
+
+- 第一种：在配置文件中指定多个包，用逗号隔开。
+- 第二种：指定多个包的共同父包。
+
+&emsp;
+
+### 选择性实例化 Bean
+
+假设在某个包下有很多Bean，有的 Bean 上标注了 `@Controller` ，有的标注了`@Component`，有的标注了 `@Service`，有的标注了 `@Repository`，现在由于某种特殊业务的需要，只允许其中所有的 `@Controller` 参与 Bean 管理，其他的都不实例化。这应该怎么办呢？
+
+配置文件做如下调整：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.example.bean" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    
+</beans>
+```
+
+`use-default-filters="true"` 表示：使用 Spring 默认的规则，只要有 `@Component`、`@Controller`、`@Service`、`@Repository` 中的任意一个注解标注，则进行实例化。`use-default-filters="false"` 表示：不再 Spring 默认实例化规则，所有申明的注解全部失效，不再实例化。
+
+```xml
+<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+```
+
+ 表示只有 `@Controller` 进行实例化。
+
+也可以将 `use-default-filters` 设置为 true（不写就是true），并且采用 `exclude-filter`方式排出哪些注解标注的 Bean 不参与实例化：
+
+```xml
+<context:component-scan base-package="com.example.bean">
+  <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+  <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+  <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
+```
+
+&emsp;
+
+### 属性相关注解
+
+#### @Value
+
+当属性的类型是简单类型时，可以使用 `@Value` 注解进行注入。总共有三种方式实现注入：
+
+```java
+// 直接使用在属性上
+@Component
+public class User {
+    @Value(value = "Jack")
+    private String name;
+    @Value("20")
+    private int age;
+}
+
+// 使用在 set() 方法上
+@Component
+public class User {
+    private String name;
+    private int age;
+
+    @Value("Tom")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Value("30")
+    public void setAge(int age) {
+        this.age = age;
+    }
+}
+
+// 使用在构造方法的形参上
+@Component
+public class User {
+    private String name;
+    private int age;
+
+    public User(@Value("Ben") String name, @Value("33") int age) {
+        this.name = name;
+        this.age = age;
+    }
+}
+```
+
+为了简化代码，一般会采用直接在属性上使用 `@Value` 注解完成属性赋值。
+
+&emsp;
+
+#### @Autowired与@Qualifier
+
+`@Autowired` 注解可以用来注入非简单类型，单独使用 `@Autowired` 注解，**默认根据类型装配**。【默认是byType】
+
+源码中有两处需要注意：
+
+* 该注解可以标注在哪里？
+  
+  构造方法上，方法上，形参上，属性上，注解上
+- 该注解有一个 required 属性，默认值是 true，表示在注入的时候要求被注入的 Bean 必须是存在的，如果不存在则报错。如果 required 属性设置为 false，表示注入的 Bean 存在或者不存在都没关系，存在的话就注入，不存在的话，也不报错。
+
+```java
+public interface UserDao {
+    void insert();
+}
+
+@Repository //纳入bean管理
+public class UserDaoForMySQL implements UserDao{
+    @Override
+    public void insert() {
+        System.out.println("正在向mysql数据库插入User数据");
+    }
+}
+
+// 在属性上注入
+@Service 
+public class UserService {
+    @Autowired 
+    private UserDao userDao;
+    
+    // 没有提供构造方法和setter方法。
+    public void save(){
+        userDao.insert();
+    }
+}
+
+// 在 set() 方法上注入
+@Service
+public class UserService {
+    private UserDao userDao;
+
+    @Autowired
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void save(){
+        userDao.insert();
+    }
+}
+
+// 在构造方法上
+@Service
+public class UserService {
+    private UserDao userDao;
+
+    @Autowired
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void save(){
+        userDao.insert();
+    }
+}
+
+// 构造方法的形参上
+@Service
+public class UserService {
+    private UserDao userDao;
+
+    public UserService(@Autowired UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void save(){
+        userDao.insert();
+    }
+}
+```
+
+当有参数的构造方法只有一个时，`@Autowired` 注解可以省略。当然，如果有多个构造方法，`@Autowired` 肯定是不能省略的。在日常开发中，为了保证整齐性和规范性，还是应该都写上。
+
+`@Autowired` 注解默认是 `byType` 进行注入的，也就是说根据类型注入的，如果以上程序中，`UserDao` 接口还有另外一个实现类，则需要 `byName`，根据名称进行装配了。`@Autowired` 注解和 `@Qualifier` 注解联合起来才可以根据名称进行装配，在 `@Qualifier`注解中指定 Bean 名称。
+
+```java
+@Repository // 这里没有给bean起名，默认名字是：userDaoForOracle
+public class UserDaoForOracle implements UserDao{
+    @Override
+    public void insert() {
+        System.out.println("正在向Oracle数据库插入User数据");
+    }
+}
+
+@Service
+public class UserService {
+    private UserDao userDao;
+
+    @Autowired
+    @Qualifier("userDaoForOracle") // 这个是bean的名字。
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void save(){
+        userDao.insert();
+    }
+}
+```
+
+&emsp;
+
+#### @Resource
+
+`@Resource` 注解也可以完成非简单类型注入，那它和 `@Autowired` 注解有什么区别？
+
+* `@Resource` 注解是 JDK 扩展包中的，也就是说属于 JDK 的一部分，所以该注解是标准注解，更加具有通用性。(JSR-250 标准中制定的注解类型。JSR 是 Java 规范提案。) `@Autowired` 注解是 Spring 框架自己的。
+
+* `@Autowired` 注解默认根据类型装配 `byType`，如果想根据名称装配，需要配合`@Qualifier` 注解一起用。`@Resource` 注解默认根据名称装配 `byName`，未指定名称时，使用属性名作为 `name`。通过 name 找不到的话会自动启动通过类型 `byType` 装配。
+
+* `@Resource` 注解可以用在属性上、`set()` 方法上，`@Autowired` 注解可以用在属性上、`set()` 方法上、构造方法上、构造方法参数上。
+
+需要注意 `@Resource` 注解属于 JDK 扩展包，所以不在 JDK 当中，需要额外引入以下依赖，在 Spring6 中如下 （**Spring6 不再支持 JavaEE，它支持的是 JakartaEE9**）：
+
+```xml
+<dependency>
+  <groupId>jakarta.annotation</groupId>
+  <artifactId>jakarta.annotation-api</artifactId>
+  <version>2.1.1</version>
+</dependency>
+```
+
+&emsp;
+
+### 全注解式开发
+
+所谓的全注解开发就是不再使用 Spring 配置文件了，写一个配置类来代替配置文件。
+
+```java
+@Configuration
+@ComponentScan({"com.example.web.dao", "com.example.web.service"})
+public class Spring6Configuration {
+}
+
+@Test
+public void testNoXml(){
+    ApplicationContext applicationContext = new AnnotationConfigApplicationContext(Spring6Configuration.class);
+    UserService userService = applicationContext.getBean("userService", UserService.class);
+    userService.save();
+}
+```
+
+
