@@ -384,7 +384,7 @@ public class User {
     <context:component-scan base-package="com.example.bean" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
-    
+
 </beans>
 ```
 
@@ -487,7 +487,7 @@ public class UserDaoForMySQL implements UserDao{
 public class UserService {
     @Autowired 
     private UserDao userDao;
-    
+
     // 没有提供构造方法和setter方法。
     public void save(){
         userDao.insert();
@@ -609,5 +609,3 @@ public void testNoXml(){
     userService.save();
 }
 ```
-
-
