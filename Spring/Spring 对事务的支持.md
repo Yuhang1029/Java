@@ -122,7 +122,7 @@ public class AccountServiceImpl implements AccountService {
 @ComponentScan("org.example.bank")
 @EnableTransactionManagement
 public class Spring6Config {
-    @Bean
+    @Bean(name = "dataSource")
     public DataSource getDataSource(){
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -139,7 +139,7 @@ public class Spring6Config {
         return jdbcTemplate;
     }
 
-    @Bean
+    @Bean(name = "dataSourceTransactionManager")
     public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource){
         DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
         dataSourceTransactionManager.setDataSource(dataSource);
@@ -149,4 +149,4 @@ public class Spring6Config {
 }
 ```
 
-
+Spring 框架看到 `@Bean` 注解后，会调用这个被标注的方法，这个方法的返回值是一个 Java 对象，这个对象会被自动纳入 IoC 管理。
