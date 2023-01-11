@@ -51,9 +51,7 @@ Java 包括三大块：
 - IO 异常处理；
 - ...
 
-这些基础工作需要耗费大量的时间，并且经过长期测试才能稳定运行。如果我们只需要输出一个简单的 HTML 页面，就不得不编写上千行底层代码，那就根本无法做到高效而可靠地开发。
-
-因此，在 JavaEE 平台上，处理 TCP 连接，解析 HTTP 协议这些底层工作统统扔给现成的 WEB 服务器去做，我们只需要把自己的应用程序跑在 Web 服务器上。为了实现这一目的，JavaEE 提供了 Servlet API，我们使用 Servlet API 编写自己的 Servlet 来处理 HTTP 请求，WEB 服务器实现 Servlet API 接口，实现底层功能。遵循 Servlet 规范的 WebApp，这个WebApp 就可以放在不同的 WEB 服务器中运行。Servlet 规范包括：
+这些基础工作需要耗费大量的时间，并且经过长期测试才能稳定运行。如果我们只需要输出一个简单的 HTML 页面，就不得不编写上千行底层代码，那就根本无法做到高效而可靠地开发。因此，在 JavaEE 平台上，处理 TCP 连接，解析 HTTP 协议这些底层工作统统扔给现成的 WEB 服务器去做，我们只需要把自己的应用程序跑在 Web 服务器上。为了实现这一目的，JavaEE 提供了 Servlet API，我们使用 Servlet API 编写自己的 Servlet 来处理 HTTP 请求，WEB 服务器实现 Servlet API 接口，实现底层功能。遵循 Servlet 规范的 WebApp，这个WebApp 就可以放在不同的 WEB 服务器中运行。Servlet 规范包括：
 
 - 规范了哪些接口
 - 规范了哪些类
