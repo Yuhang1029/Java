@@ -34,7 +34,7 @@ Java 包括三大块：
 
 角色和角色之间需要遵守哪些规范，哪些协议：
 
-- Browser 和 WEB Server之间有一套传输协议：HTTP 协议。（超文本传输协议。）
+- Browser 和 WEB Server之间有一套传输协议：HTTP 协议（超文本传输协议）。
 - WebApp 开发团队 和 DB Server 的开发团队之间有一套规范：JDBC规范。
 - WebApp 的开发团队 和 WEB Server 的开发团队之间有一套规范，即 JavaEE 规范之一Servlet 的规范。Servlet 规范的作用是让 WEB Server 和 WebApp 解耦合。
 
