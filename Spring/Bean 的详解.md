@@ -2,9 +2,7 @@
 
 ## 基础特点
 
-默认情况下，Spring 的 IoC 容器创建的 Bean 对象是单例的，Bean 对象的创建是在初始化 Spring 上下文的时候就完成的。
-
-如果想让 Spring 的 Bean 对象以多例的形式存在，可以在 <bean> 标签中指定 `scope` 属性的值为 `prototype` ，这样Spring会在每一次执行 `getBean()` 方法的时候创建 Bean 对象，调用几次则创建几次。
+默认情况下，Spring 的 IoC 容器创建的 Bean 对象是单例的，Bean 对象的创建是在初始化 Spring 上下文的时候就完成的。如果想让 Spring 的 Bean 对象以多例的形式存在，可以在 <bean> 标签中指定 `scope` 属性的值为 `prototype` ，这样 Spring 会在每一次执行 `getBean()` 方法的时候创建 Bean 对象，调用几次则创建几次。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

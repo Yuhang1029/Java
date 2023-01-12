@@ -2,7 +2,7 @@
 
 ## 什么是 SpringMVC
 
-它是基于 MVC 开发模式的框架，用来优化控制器。它是Spring家族的一员，它也具备 IOC 和 AOP。MVC 是一种开发模式，它是模型视图控制器的简称，所有的 web 应用都是基于 MVC开发。M 指代模型层，包含实体类，业务逻辑层，数据访问层；V 是视图层， html，javaScript，Vue 等都是视图层，用来显现数据；C 是控制器，它是用来接收客户端的请求，并返回响应到客户端的组件，Servlet 就是组件。**SpringMVC 的主要作用就是优化 Servlet 的功能，包括数据提交的优化，携带数据的优化和返回处理的优化**。
+它是基于 MVC 开发模式的框架，用来优化控制器。它是 Spring 家族的一员，它也具备 IOC 和 AOP。MVC 是一种开发模式，它是模型视图控制器的简称，所有的 web 应用都是基于 MVC开发。M 指代模型层，包含实体类，业务逻辑层，数据访问层；V 是视图层， html，javaScript，Vue 等都是视图层，用来显现数据；C 是控制器，它是用来接收客户端的请求，并返回响应到客户端的组件，Servlet 就是组件。**SpringMVC 的主要作用就是优化 Servlet 的功能，包括数据提交的优化，携带数据的优化和返回处理的优化**。
 
 SpringMVC 框架的优点包括：
 
@@ -135,27 +135,36 @@ public class DemoAction1 {
 }
 ```
 
-此注解也可区分 GET 请求和 POST 请求：
+此注解也可区分 GET 请求和 POST 请求，如果不指明则默认支持所有类型请求：
 
 ```java
 @Controller
 public class ReqAction {
     @RequestMapping(value = "/req",method = RequestMethod.GET)
-	public String req(){
-	    System.out.println("我是处理get请求的........");
-	    return "main";
-	}
-	@RequestMapping(value = "/req" ,method = RequestMethod.POST)
-	public String req1(){
-	    System.out.println("我是处理post请求的........");
-	    return "main";
-	}
+    public String req(){
+        System.out.println("我是处理get请求的........");
+        return "main";
+    }
+    @RequestMapping(value = "/req" ,method = RequestMethod.POST)
+    public String req1(){
+        System.out.println("我是处理post请求的........");
+        return "main";
+    }
 }
+```
+
+此外，SpringMVC 还提供了派生注解，这样就可以不需要特意指明 `method`：
+
+```java
+@GetMapping     // 处理 GET 请求
+@PostMapping    // 处理 POST 请求
+@PutMapping     // 处理 PUT 请求
+@DeleteMapping  // 处理 DELETE 请求
 ```
 
 &emsp;
 
-## 五种数据提交的方式
+## 五种获取请求参数的方式
 
 ### 单个表单提交
 
@@ -201,7 +210,7 @@ public String two(Users u){
 
 ### 动态占位符提交
 
-仅限于超链接或地址拦提交数据，它是一杠一值，一杠一大括号，使用注解 `@PathVariable`来解析。
+仅限于超链接或地址拦提交数据，它是一杠一值，一杠一大括号，使用注解 `@PathVariable`来解析，适合 RestFul 风格。
 
 例如当前地址栏的数据是：
 
@@ -241,6 +250,18 @@ public String four(
 
 &emsp;
 
+除了 value 这个属性，还可以设置该参数是否是必须的，以及默认值：
+
+```java
+public String four(
+       @RequestParam(value = "name", required = false, defaultValue = "Tom")
+       String uname,
+       return "main";
+}
+```
+
+&emsp;
+
 ### 手工提取数据
 
 ```java
@@ -252,3 +273,7 @@ public String five(HttpServletRequest request){
     return "main";
 }
 ```
+
+&emsp;
+
+## 域对象共享数据

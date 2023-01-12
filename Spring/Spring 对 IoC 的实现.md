@@ -2,7 +2,7 @@
 
 ## IoC 控制反转
 
-控制反转是一种思想，控制反转是为了降低程序耦合度，提高程序扩展力，达到 OCP 原则，达到DIP原则。在前面说过，控制反转反转的主要是两个部分：
+控制反转是一种思想，控制反转是为了降低程序耦合度，提高程序扩展力，达到 OCP 原则，达到 DIP 原则。在前面说过，控制反转反转的主要是两个部分：
 
 - 将对象的创建权利交出去，交给第三方容器负责。
 
@@ -16,10 +16,7 @@
 
 依赖注入实现了控制反转的思想。Spring 通过依赖注入的方式来完成 Bean 管理的，这里Bean 管理说的是 Bean 对象的创建，以及 Bean 对象中属性的赋值（或者叫做 Bean 对象之间关系的维护）。依赖注入拆分来理解，依赖指的是对象和对象之间的关联关系。注入指的是一种数据传递行为，通过注入行为来让对象和对象产生关系。
 
-依赖注入常见的实现方式包括两种：
-
-- 第一种：set 注入
-- 第二种：构造注入
+依赖注入常见的实现方式包括两种，一是通过 `set()` 方法注入，二是通过构造函数注入。
 
 &emsp;
 
@@ -208,7 +205,7 @@ public class UserService {
 </bean>
 ```
 
-&emsp;@Autowired注解可以用来注入**非简单类型**
+&emsp;
 
 ## 基于XML 的自动装配
 
@@ -394,7 +391,7 @@ public class User {
 <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 ```
 
- 表示只有 `@Controller` 进行实例化。
+表示只有 `@Controller` 进行实例化。
 
 也可以将 `use-default-filters` 设置为 true（不写就是true），并且采用 `exclude-filter`方式排出哪些注解标注的 Bean 不参与实例化：
 
@@ -458,15 +455,13 @@ public class User {
 
 &emsp;
 
-#### @Autowired与@Qualifier
+#### @Autowired 与@Qualifier
 
 `@Autowired` 注解可以用来注入非简单类型，单独使用 `@Autowired` 注解，**默认根据类型装配**。【默认是byType】
 
 源码中有两处需要注意：
 
-* 该注解可以标注在哪里？
-  
-  构造方法上，方法上，形参上，属性上，注解上
+* 该注解可以标注在构造方法上，方法上，形参上，属性上，注解上。
 - 该注解有一个 required 属性，默认值是 true，表示在注入的时候要求被注入的 Bean 必须是存在的，如果不存在则报错。如果 required 属性设置为 false，表示注入的 Bean 存在或者不存在都没关系，存在的话就注入，不存在的话，也不报错。
 
 ```java
@@ -474,11 +469,11 @@ public interface UserDao {
     void insert();
 }
 
-@Repository //纳入bean管理
+@Repository // 纳入 bean 管理
 public class UserDaoForMySQL implements UserDao{
     @Override
     public void insert() {
-        System.out.println("正在向mysql数据库插入User数据");
+        System.out.println("正在向 mysql 数据库插入 User 数据");
     }
 }
 
@@ -488,7 +483,7 @@ public class UserService {
     @Autowired 
     private UserDao userDao;
 
-    // 没有提供构造方法和setter方法。
+    // 没有提供构造方法和 setter 方法。
     public void save(){
         userDao.insert();
     }

@@ -16,7 +16,7 @@
 
 ![image.png](https://cdn.nlark.com/yuque/0/2022/png/21376908/1663726169861-b5acb757-17e0-4d3d-a811-400eb7edd1b3.png?x-oss-process=image%2Fwatermark%2Ctype_d3F5LW1pY3JvaGVp%2Csize_29%2Ctext_5Yqo5Yqb6IqC54K5%2Ccolor_FFFFFF%2Cshadow_50%2Ct_80%2Cg_se%2Cx_10%2Cy_10)
 
-1. Spring Core模块
+1. Spring Core 模块
    
    这是 Spring 框架最基础的部分，它提供了依赖注入（Dependency Injection）特征来实现容器对 Bean 的管理。核心容器的主要组件是 BeanFactory，BeanFactory 是工厂模式的一个实现，是任何 Spring 应用的核心。它使用 IoC 将应用配置和依赖从实际的应用代码中分离出来。
 
@@ -28,7 +28,7 @@
    
    Spring 在它的 AOP 模块中提供了对面向切面编程的丰富支持，Spring AOP 模块为基于 Spring 的应用程序中的对象提供了事务管理服务。通过使用 Spring AOP，不用依赖组件，就可以将声明性事务管理集成到应用程序中，可以自定义拦截器、切点、日志等操作。
 
-4. Spring DAO模块
+4. Spring DAO 模块
    
    提供了一个 JDBC 的抽象层和异常层次结构，消除了烦琐的JDBC编码和数据库厂商特有的错误代码解析，用于简化 JDBC。
 
@@ -36,7 +36,7 @@
    
    Spring 提供了ORM 模块。Spring 并不试图实现它自己的 ORM 解决方案，而是为几种流行的 ORM 框架提供了集成方案，包括 Hibernate、JDO 和 iBATIS SQL 映射，这些都遵从 Spring 的通用事务和 DAO 异常层次结构。
 
-6. Spring Web MVC模块
+6. Spring Web MVC 模块
    
    Spring 为构建 Web 应用提供了一个功能全面的 MVC 框架。虽然 Spring 可以很容易地与其它 MVC 框架集成，例如 Struts，但 Spring 的 MVC 框架使用 IoC 对控制逻辑和业务对象提供了完全的分离。
 
@@ -47,8 +47,6 @@
 8. Spring Web 模块
    
    Web 上下文模块建立在应用程序上下文模块之上，为基于 Web 的应用程序提供了上下文，提供了 Spring 和其它 Web 框架的集成，比如 Struts、WebWork。还提供了一些面向服务支持，例如：实现文件上传的 multipart 请求。
-
-    
 
 &emsp;
 
