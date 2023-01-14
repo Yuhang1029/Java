@@ -120,7 +120,7 @@ public class AccountServiceImpl implements AccountService {
 ```java
 @Configuration
 @ComponentScan("org.example.bank")
-@EnableTransactionManagement
+@EnableTransactionManagement    // 开启事务注解
 public class Spring6Config {
     @Bean(name = "dataSource")
     public DataSource getDataSource(){
@@ -149,4 +149,4 @@ public class Spring6Config {
 }
 ```
 
-Spring 框架看到 `@Bean` 注解后，会调用这个被标注的方法，这个方法的返回值是一个 Java 对象，这个对象会被自动纳入 IoC 管理。
+`@Bean` 注解中的 `name` 类似配置文件中的 id，把这个注解放在一个方法上，方法名随意，返回值需要是一个 Java 对象。Spring 框架看到 `@Bean` 注解后，会调用这个被标注的方法，返回的 Java 对象会被自动纳入 IoC 管理。

@@ -575,7 +575,7 @@ public class UserService {
 
 * `@Resource` 注解可以用在属性上、`set()` 方法上，`@Autowired` 注解可以用在属性上、`set()` 方法上、构造方法上、构造方法参数上。
 
-需要注意 `@Resource` 注解属于 JDK 扩展包，所以不在 JDK 当中，需要额外引入以下依赖，在 Spring6 中如下 （**Spring6 不再支持 JavaEE，它支持的是 JakartaEE9**）：
+需要注意 `@Resource` 注解属于 JDK 扩展包，所以不在 JDK 当中，需要额外引入以下依赖，在 Spring6 中如下 （**Spring6 不再支持 JavaEE，它支持的是 JakartaEE 9**）：
 
 ```xml
 <dependency>
@@ -604,3 +604,5 @@ public void testNoXml(){
     userService.save();
 }
 ```
+
+其中 `@Configuration` 代表这是一个配置类，代替 `spring.xml` 配置文件，`@ComponentScan` 代表需要被扫描的包。
