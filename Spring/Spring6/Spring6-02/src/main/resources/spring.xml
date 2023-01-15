@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="userDao" class="org.example.dao.UserDao"/>
+    <bean id="orderDao" class="org.example.dao.OrderDao"/>
+
+    <bean id="user" class="org.example.bean.User">
+        <property name="name" value="Jack"/>
+        <property name="password" value="abc"/>
+    </bean>
+
+    <bean id="userService" class="org.example.service.UserService">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="orderService" class="org.example.service.OrderService">
+        <property name="orderDao" ref="orderDao"/>
+    </bean>
+</beans>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans>
+    <bean id = "userController" class = "com.example.controller.UserController"/>
+    <bean id = "accountController" class = "com.example.controller.AccountController"/>
+</beans>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean id="user" class="org.example.bean.User">
+        <property name="name" value="张三"/>
+        <property name="age" value="20"/>
+    </bean>
+
+    <bean id="userDao" class="org.example.bean.UserDao"/>
+
+    <bean id="userService" class="org.example.bean.UserService">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+</beans>
