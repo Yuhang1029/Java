@@ -34,7 +34,29 @@ SpringMVC 框架的优点包括：
 
 * **ViewResolver**：视图解析器，由框架提供，进行视图解析，得到相对应视图。
 
+&emsp;
 
+## SpringMVC 执行流程
+
+1. 用户向浏览器发送请求，请求被 SpringMVC 前端控制器 `DispatcherServlet` 捕获。
+
+2. `DispatcherServlet` 进行 URL 的解析，得到请求资源标识符 (URI)，判断其对应的映射：
+   
+   * 如果不存在，判断是否配置了 `mvc:default-servlet-handler`。
+     
+     * 如果没有配置，则控制台报映射找不到错误，浏览器显示 404 错误。
+     
+     * 如果配置了，则访问目标资源，一般为静态资源，找不到也会显示 404 错误。
+   
+   * 如果存在，根据该 URI，调用 `HandlerMapping` 获得该 Handler 配置的所有相关对象 （控制器和拦截器），最后以 HandlerExecutionChain 执行链对象的形式返回。
+
+3. `DispatcherServlet` 根据获得的 Handler，选择一个 `HandlerAdapter`，提取 Request 中的模型数据，填充参数，开始执行。这里面就包括了一些额外工作，例如 `HttpMessageConverter`，数据转换，格式化等等。
+
+4. Handler 执行完成后，向 `DispatcherServlet` 返回一个 `ModelAndView` 对象。
+
+5. 渲染视图，将结果返回给客户端。
+
+&emsp;
 
 ## 一个简单的项目
 
@@ -509,7 +531,7 @@ public class SpringMVCWebConfig implements WebMvcConfigurer {
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
        configurer.enable();
     }
-    
+
     // 添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

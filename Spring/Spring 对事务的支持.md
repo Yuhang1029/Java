@@ -145,7 +145,6 @@ public class Spring6Config {
         dataSourceTransactionManager.setDataSource(dataSource);
         return dataSourceTransactionManager;
     }
-
 }
 ```
 
