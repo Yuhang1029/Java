@@ -8,13 +8,13 @@ Spring Boot  的特点包括：
 
 - 内嵌的 Tomcat， jetty ， Undertow
 
-- 提供了 starter 起步依赖，简化应用的配置。比如使用 MyBatis 框架 ， 需要在 Spring 项目中，配置 MyBatis 的对象 SqlSessionFactory ，Dao的代理对象；在 Spring Boot 项目中，在 pom.xml 里面, 加入一个 `mybatis-spring-boot-starter` 依赖即可。
+- 提供了 starter 起步依赖，简化应用的配置。比如使用 MyBatis 框架 ， 需要在 Spring 项目中，配置 MyBatis 的对象 SqlSessionFactory ，Dao 的代理对象；在 Spring Boot 项目中，在 pom.xml 里面, 加入一个 `mybatis-spring-boot-starter` 依赖即可。
 
 - 自动配置，就是把 Spring 中的，第三方库中的对象都创建好，放到容器中，开发人员可以直接使用。
 
 - 提供了健康检查， 统计，外部化配置。
 
-- 不用生成代码， 不用使用xml做配置。
+- 不用生成代码， 不用使用 `.xml` 做配置。
 
 &emsp;
 
@@ -123,7 +123,7 @@ public class Tiger {
 
 &emsp;
 
-## Spring Boot 的使用
+## Spring Boot 基础使用
 
 通过 [https://start.spring.io](https://start.spring.io)，使用 Spring 提供的初始化器， 就是向导创建 Spring Boot 应用。
 
@@ -206,3 +206,77 @@ public class SpringBoot02Application implements CommandLineRunner {
     }
 }
 ```
+
+&emsp;
+
+## WEB 组件
+
+### 拦截器
+
+拦截器是 SpringMVC 中一种对象，能拦截器对 Controller 的请求。框架中有系统的拦截器， 还可以自定义拦截器，实现对请求预先处理。实现自定义拦截器需要实现`HandlerInterceptor` 接口。
+
+之前介绍过如何在 SpringMVC 配置文件中声明拦截器，这里介绍在 Spring Boot 中如何使用：
+
+```java
+@Configuration
+public class MyAppConfig implements WebMvcConfigurer {
+    //添加拦截器对象， 注入到容器中
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        //创建拦截器对象
+        HandlerInterceptor interceptor = new LoginInterceptor();
+        //指定拦截的请求uri地址
+        String[] path = {"/user/**"};
+        //指定不拦截的地址
+        String[] excludePath = {"/user/login"};
+        registry.addInterceptor(interceptor)
+                .addPathPatterns(path)
+                .excludePathPatterns(excludePath);
+    }
+}
+```
+
+定义的配置类需要实现 `WebMvcConfigurer` 接口，里面包含许多和 SpringMVC 设置有关的函数，然后只需要加上 `@Configuration` 即可完成所有配置。
+
+&emsp;
+
+### Servlet
+
+自定义 Servlet 的过程和之前一样：
+
+```java
+public class MyServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req,resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+       //使用HttpServletResponse输出数据，应答结果
+        resp.setContentType("text/html;charset=utf-8");
+        PrintWriter out  = resp.getWriter();
+        out.println("===执行的是Servlet==");
+        out.flush();
+        out.close();
+    }
+}
+```
+
+在 Servlet 注册部分这里同样适用配置类即可：
+
+```java
+@Configuration
+public class WebApplictionConfig {
+    //定义方法， 注册Servlet对象
+    @Bean
+    public ServletRegistrationBean servletRegistrationBean(){
+        ServletRegistrationBean bean = new ServletRegistrationBean();
+        bean.setServlet(new MyServlet());
+        bean.addUrlMappings("/login","/test"); 
+        return bean;
+    }
+}
+```
+
+

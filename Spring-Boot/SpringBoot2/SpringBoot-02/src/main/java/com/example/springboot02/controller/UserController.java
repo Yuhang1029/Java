@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 @RestController
-public class HelloController {
-    @RequestMapping("/hello")
+public class UserController {
+    @RequestMapping("/user")
     public String doSome() {
-        return "SpringBoot";
+        return "SpringBoot User";
     }
 }
