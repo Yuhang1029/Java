@@ -279,4 +279,35 @@ public class WebApplictionConfig {
 }
 ```
 
+&emsp;
 
+### 过滤器
+
+Filter 是 Servlet 规范中的过滤器，可以处理请求，对请求的参数，属性进行调整，常常在过滤器中处理字符编码。在框架中使用过滤器需要首先创建自定义过滤器类，然后注册 Filter 过滤器对象。
+
+过滤器的定义：
+
+```java
+public class MyFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("执行了MyFilter，doFilter");
+        filterChain.doFilter(servletRequest,servletResponse);
+    }
+}
+```
+
+注册过程：
+
+```java
+@Configuration
+public class WebApplicationConfig {
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean(){
+        FilterRegistrationBean bean  = new FilterRegistrationBean();
+        bean.setFilter(new MyFilter());
+        bean.addUrlPatterns("/user/*");
+        return bean;
+    }
+}
+```
